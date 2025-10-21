@@ -1,0 +1,21 @@
+[
+  {
+    "profile": {
+      "name": "Sample Night Buyer",
+      "email": "nightbuyer@example.com"
+    },
+    "segmentation": {
+      "rfm_segment": "Low_Value_Frequent",
+      "churn_risk": "Medium"
+    },
+    "behavioral_traits": {
+      "night_buyer": "Yes"
+    },
+    "financial_metrics": {
+      "success_rate_pct": 48
+    },
+    "product_preferences": {
+      "primary_category": "Vodka"
+    }
+  }
+]
