@@ -13,7 +13,10 @@ dependencies = [
   "pandas>=2.0",
   "numpy>=1.24",
   "python-dotenv>=1.0",
-  "click>=8.1"
+  "click>=8.1",
+  "openai>=1.40",
+  "requests>=2.31",
+  "twilio>=9.0.0"
 ]
 
 [project.optional-dependencies]
@@ -27,5 +30,9 @@ liquor-subagent = "liquor_agent.subagent:main"
 liquor-plan = "liquor_agent.orchestrator:main"
 liquor-send = "liquor_agent.sender:main"
 
-[tool.black]
-line-length = 100
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["liquor_agent*"]

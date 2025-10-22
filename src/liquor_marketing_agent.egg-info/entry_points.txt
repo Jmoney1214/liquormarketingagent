@@ -1,0 +1,4 @@
+[console_scripts]
+liquor-plan = liquor_agent.orchestrator:main
+liquor-send = liquor_agent.sender:main
+liquor-subagent = liquor_agent.subagent:main

@@ -1,0 +1,42 @@
+import click, json
+from .dataio import read_json
+from .pusher import render_email_html, render_subject, render_sms
+@click.command()
+@click.option("--plan", "plan_path", required=True, type=click.Path(exists=True))
+@click.option("--mode", type=click.Choice(["email","sms","both"]), default="email", show_default=True)
+@click.option("--limit", default=10, show_default=True)
+def main(plan_path, mode, limit):
+    plan = read_json(plan_path)
+    sends = plan.get("sends", [])[:limit]
+    from .pusher import render_email_html, render_subject, render_sms, send_email_mailgun, send_sms_twilio
+import os, time
+
+# Safety gate: only allow real sending when ENABLE_PROVIDERS is truthy in .env
+ENABLE_PROVIDERS = os.getenv("ENABLE_PROVIDERS", "0").lower() in ("1","true","yes")
+
+if not ENABLE_PROVIDERS:
+    # preserve the original safe behavior unless explicitly enabled
+    print(f"Pretend sending {len(sends)} '{mode}' messages. Configure providers in pusher.py or set ENABLE_PROVIDERS=1 in .env to go live.")
+else:
+    for item in sends[:limit]:
+        try:
+            # Email
+            if mode in ("email","both") and item.get("email"):
+                subj = render_subject(item)
+                html = render_email_html(item)
+                text = item.get("text", "")
+                resp = send_email_mailgun(item["email"], subj, html, text)
+                print("EMAIL_SENT:", item.get("email"), "->", resp.get("status_code", resp))
+
+            # SMS
+            if mode in ("sms","both") and item.get("phone"):
+                sms_body = render_sms(item)
+                resp = send_sms_twilio(item["phone"], sms_body)
+                print("SMS_SENT:", item.get("phone"), "->", resp.get("sid", resp))
+
+            time.sleep(0.5)  # small throttle
+        except Exception as e:
+            print("SEND_ERROR:", repr(e))
+
+if __name__ == "__main__":
+    main()
