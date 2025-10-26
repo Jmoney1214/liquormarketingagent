@@ -42,3 +42,4 @@ class Token(BaseModel):
     expires_in: int
     user: UserResponse
 
+
